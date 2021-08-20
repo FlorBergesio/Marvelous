@@ -1,52 +1,54 @@
 import './App.css';
 import sampleData from './sampleData.js';
+import CardSection from './components/card-section';
 
 function App() {
   // withSampleData = true -> use sample data in sampleData.js. 
   // withSampleData = false -> to use API calls
   const withSampleData = true;
-  let characterArray = [];
+  let data = [];
+  let footer = "";
 
   if ( withSampleData ) {
     // With sample data
-    characterArray = sampleData.data.results;
+    footer = sampleData.attributionText;
+    data = sampleData.data.results;
   } else {
     // With API calls
 
   }
 
-  if ( characterArray.length <= 0 ) {
+  if ( data.length <= 0 ) {
     return (
       <div className="App">
         <h1>Marvelous</h1>
-        <p>There are no characters available.</p>
+        <p>There are no results available.</p>
       </div>
     );
   }
-
-  const charactersToDisplay = characterArray.map( ( element ) => {
-    return (
-      <div className="single-character">
-        <h3>{ element.name }</h3>
-        <img className="single-character-profile-pic"
-          src={ element.thumbnail.path + '.' + element.thumbnail.extension }
-          alt={ element.name }
-        />
-      </div>
-    );
-  });
 
   return (
     <div className="App">
       <header>
         <h1>Marvelous</h1>
       </header>
-      <section>
-        <h2>Characters</h2>
-        <div className="characters">
-          { charactersToDisplay }
-        </div>
-      </section>
+
+      <CardSection
+        title="Characters"
+        type="characters"
+        data={ data }
+      />
+
+      <footer>
+        <p>{`Marvelous - ${footer}`}</p>
+        <a
+          href="https://github.com/FlorBergesio"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Made with love
+        </a>
+      </footer>
     </div>
   );
 }

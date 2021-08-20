@@ -1,28 +1,18 @@
-header>h1, section>h2 {
+header>h1 {
     color: white;
     text-align: center;
     text-transform: uppercase;
 }
 
-.characters {
+footer {
+    display: flex;
+    flex-direction: column;
+    color: white;
+    text-align: center;
     padding: 15px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 15px;
-    justify-items: center;
 }
 
-
-.single-character {
-    padding: 5px;
-    border-radius: 15px;
-    background-color: white;
-    box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-}
-
-.single-character-profile-pic {
-    width: 300px;
-    height: auto;
-    border: 3px solid black;
+footer>a {
+    color: white;
+    text-align: center;
 }

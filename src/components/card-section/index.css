@@ -1,0 +1,13 @@
+.card-section>h2 {
+    color: white;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.card-container {
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 15px;
+    justify-items: center;
+}

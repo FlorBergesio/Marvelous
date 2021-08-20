@@ -1,0 +1,13 @@
+.single-card {
+    padding: 5px;
+    border-radius: 15px;
+    background-color: white;
+    box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.single-card-thumbnail {
+    width: 300px;
+    height: auto;
+    border: 3px solid black;
+}
