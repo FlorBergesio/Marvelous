@@ -7,14 +7,20 @@ const CardSection = (props) => {
 
     switch ( props.type ) {
         case 'characters':
-            cards = props.data.map( ( element ) => {
+            cards = props.data.map( ( element, key ) => {
                 return (
                     <Card
+                        key={key}
                         title={ element.name }
                         thumbnail={ element.thumbnail }
                     />
                 );
             });
+            break;
+        default:
+            return (
+                <p>Error</p>
+            );
             break;
     }
     
