@@ -1,29 +1,55 @@
+import React, { useEffect, useState } from "react";
 import './App.css';
 import sampleData from './sampleData.js';
+import Button from './components/button';
 import CardSection from './components/card-section';
 
 function App() {
   // withSampleData = true -> use sample data in sampleData.js. 
   // withSampleData = false -> to use API calls
-  const withSampleData = true;
-  let data = [];
-  let footer = "";
+  const [withSampleData, setwithSampleData] = useState(true);
 
-  if ( withSampleData ) {
-    // With sample data
-    footer = sampleData.attributionText;
-    data = sampleData.data.results;
+  const [dataRetrieved, setDataRetrieved] = useState([]);
+  const [footerExtraInfo, setfooterExtraInfo] = useState('2021');
+
+  useEffect( () => {
+    async function fetchMarvelAPI() {
+      let response = await fetch(
+        `${process.env.REACT_APP_MARVEL_API_URL}/characters?nameStartsWith=White&ts=${process.env.REACT_APP_MARVEL_API_TS}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_HASH}`
+      );
+      const dataFromAPI = await response.json();
+      setDataRetrieved(dataFromAPI.data.results);
+      setfooterExtraInfo(dataFromAPI.attributionText)
+    }
+
+    if ( withSampleData ) {
+      // With sample data
+      setfooterExtraInfo(sampleData.attributionText)
+      setDataRetrieved(sampleData.data.results);
+    } else {
+      // With API calls
+      fetchMarvelAPI();
+    }
+
+  }, [withSampleData] );
+
+  const handleClickChangeDataSource = () => {
+    setwithSampleData(!withSampleData);
+  };
+
+  let content;
+
+  if ( dataRetrieved.length > 0 ) {
+    content = (
+      <CardSection
+        title="Characters"
+        type="characters"
+        data={ dataRetrieved }
+      />
+    );
   } else {
-    // With API calls
-
-  }
-
-  if ( data.length <= 0 ) {
-    return (
-      <div className="App">
-        <h1>Marvelous</h1>
-        <p>There are no results available.</p>
-      </div>
+    content = (
+      <p className="error"><span>There are no results available.</span></p>
     );
   }
 
@@ -33,14 +59,17 @@ function App() {
         <h1>Marvelous</h1>
       </header>
 
-      <CardSection
-        title="Characters"
-        type="characters"
-        data={ data }
-      />
+      <section className="button-container">
+        <Button
+          handleClick={handleClickChangeDataSource}
+          text="Change data source"
+        />
+      </section>
+
+      { content }
 
       <footer>
-        <p>{`Marvelous - ${footer}`}</p>
+        <p>{`Marvelous - ${footerExtraInfo}`}</p>
         <a
           href="https://github.com/FlorBergesio"
           target="_blank"
