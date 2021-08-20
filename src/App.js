@@ -28,18 +28,25 @@ function App() {
     return (
       <div className="single-character">
         <h3>{ element.name }</h3>
-        <img src={ element.thumbnail.path + '.' + element.thumbnail.extension } alt={ element.name } />
+        <img className="single-character-profile-pic"
+          src={ element.thumbnail.path + '.' + element.thumbnail.extension }
+          alt={ element.name }
+        />
       </div>
     );
   });
 
   return (
     <div className="App">
-      <h1>Marvelous</h1>
-      <h2>Characters</h2>
-      <div className="characters">
-        { charactersToDisplay }
-      </div>
+      <header>
+        <h1>Marvelous</h1>
+      </header>
+      <section>
+        <h2>Characters</h2>
+        <div className="characters">
+          { charactersToDisplay }
+        </div>
+      </section>
     </div>
   );
 }
