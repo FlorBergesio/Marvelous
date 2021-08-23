@@ -84,38 +84,46 @@ function App() {
           text={ `Change data source (To ${ ( withSampleData ? 'API' : 'Sample' ) })` }
         />
 
-        <Button
-          handleClick={handleClickChangeToCharacters}
-          text="Characters"
-        />
+        { (!withSampleData) && 
+          <>
+            <Button
+              handleClick={handleClickChangeToCharacters}
+              text="Characters"
+            />
 
-        <Button
-          handleClick={handleClickChangeToComics}
-          text="Comics"
-        />
+            <Button
+              handleClick={handleClickChangeToComics}
+              text="Comics"
+            />
+          </>
+        }
       </section>
 
-      <section className="search-input-container">
-        <SearchInput
-          id="searchCharacter"
-          text="Character name"
-          placeholder="Name starts with ..."
-          handleOnChange={ (currentValue) => {
-            setFilters((currentValue.target.value ? 'nameStartsWith=' + currentValue.target.value : ''));
-            setEntity('characters');
-            } }
-        />
+      { (!withSampleData) && 
+        <>
+          <section className="search-input-container">
+            <SearchInput
+              id="searchCharacter"
+              text="Character name"
+              placeholder="Name starts with ..."
+              handleOnChange={ (currentValue) => {
+                setFilters((currentValue.target.value ? 'nameStartsWith=' + currentValue.target.value : ''));
+                setEntity('characters');
+                } }
+            />
 
-        <SearchInput
-          id="searchComic"
-          text="Comic title"
-          placeholder="Title starts with ..."
-          handleOnChange={ (currentValue) => {
-            setFilters((currentValue.target.value ? 'titleStartsWith=' + currentValue.target.value : ''));
-            setEntity('comics');
-            } }
-        />
-      </section>
+            <SearchInput
+              id="searchComic"
+              text="Comic title"
+              placeholder="Title starts with ..."
+              handleOnChange={ (currentValue) => {
+                setFilters((currentValue.target.value ? 'titleStartsWith=' + currentValue.target.value : ''));
+                setEntity('comics');
+                } }
+            />
+          </section>
+        </>
+      }
 
       { content }
 
