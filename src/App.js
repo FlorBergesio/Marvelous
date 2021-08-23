@@ -45,17 +45,11 @@ function App() {
 
   }, [withSampleData, entity, query, filters] );
 
-  const handleClickChangeToCharacters = () => {
-    setEntity('characters');
+  const handleClickChangeEntity = useCallback( (entity) => {
+    setEntity(entity);
     setQuery('');
     setFilters('');
-  };
-
-  const handleClickChangeToComics = () => {
-    setEntity('comics');
-    setQuery('');
-    setFilters('');
-  };
+  }, [] );
 
   let content;
 
@@ -87,12 +81,12 @@ function App() {
         { (!withSampleData) && 
           <>
             <Button
-              handleClick={handleClickChangeToCharacters}
+              handleClick={ () => { handleClickChangeEntity('characters') } }
               text="Characters"
             />
 
             <Button
-              handleClick={handleClickChangeToComics}
+              handleClick={ () => { handleClickChangeEntity('comics') } }
               text="Comics"
             />
           </>
@@ -100,29 +94,27 @@ function App() {
       </section>
 
       { (!withSampleData) && 
-        <>
-          <section className="search-input-container">
-            <SearchInput
-              id="searchCharacter"
-              text="Character name"
-              placeholder="Name starts with ..."
-              handleOnChange={ (currentValue) => {
-                setFilters((currentValue.target.value ? 'nameStartsWith=' + currentValue.target.value : ''));
-                setEntity('characters');
-                } }
-            />
+        <section className="search-input-container">
+          <SearchInput
+            id="searchCharacter"
+            text="Character name"
+            placeholder="Name starts with ..."
+            handleOnChange={ (currentValue) => {
+              setFilters((currentValue.target.value ? 'nameStartsWith=' + currentValue.target.value : ''));
+              setEntity('characters');
+              } }
+          />
 
-            <SearchInput
-              id="searchComic"
-              text="Comic title"
-              placeholder="Title starts with ..."
-              handleOnChange={ (currentValue) => {
-                setFilters((currentValue.target.value ? 'titleStartsWith=' + currentValue.target.value : ''));
-                setEntity('comics');
-                } }
-            />
-          </section>
-        </>
+          <SearchInput
+            id="searchComic"
+            text="Comic title"
+            placeholder="Title starts with ..."
+            handleOnChange={ (currentValue) => {
+              setFilters((currentValue.target.value ? 'titleStartsWith=' + currentValue.target.value : ''));
+              setEntity('comics');
+              } }
+          />
+        </section>
       }
 
       { content }
