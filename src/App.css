@@ -29,7 +29,8 @@ footer>a {
     box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.5);
 }
 
-.button-container {
+.button-container, .search-input-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
 }
