@@ -15,7 +15,7 @@ function App() {
 
   const [entity, setEntity] = useState('characters');
   const [query, setQuery] = useState('');
-  const [filters, setFilters] = useState('nameStartsWith=White');
+  const [filters, setFilters] = useState('');
 
   const handleClickChangeDataSource = useCallback( () => {
     setwithSampleData( ( currentValue ) => !currentValue );
