@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import './App.css';
 import sampleData from './sampleData.js';
 import Button from './components/button';
@@ -19,31 +19,28 @@ function App() {
 
   const handleClickChangeDataSource = useCallback( () => {
     setwithSampleData( ( currentValue ) => !currentValue );
-    if ( withSampleData ) {
-      setEntity('characters');
-    }
   }, [] );
 
   useEffect( () => {
     if ( withSampleData ) {
       // With sample data
-      setfooterExtraInfo(sampleData.attributionText)
+      setEntity('characters');
+      setfooterExtraInfo(sampleData.attributionText);
       setDataRetrieved(sampleData.data.results);
     } else {
       // With API calls
-      async function fetchMarvelAPI() {
-        let response = await fetch(
-          `${process.env.REACT_APP_MARVEL_API_URL}/${entity}${query}?${filters}&ts=${process.env.REACT_APP_MARVEL_API_TS}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_HASH}`
-        );
-        const dataFromAPI = await response.json();
-        setDataRetrieved(dataFromAPI.data.results);
-        setfooterExtraInfo(dataFromAPI.attributionText)
-      }
-
-      fetchMarvelAPI();
+      fetchApi();
     }
-
   }, [withSampleData, entity, query, filters] );
+
+  const fetchApi = useCallback( async () => {
+    let response = await fetch(
+      `${process.env.REACT_APP_MARVEL_API_URL}/${entity}${query}?${filters}&ts=${process.env.REACT_APP_MARVEL_API_TS}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_HASH}`
+    );
+    const dataFromAPI = await response.json();
+    setDataRetrieved(dataFromAPI.data.results);
+    setfooterExtraInfo(dataFromAPI.attributionText);
+  }, [entity, query, filters] );
 
   const handleClickChangeEntity = useCallback( (entity) => {
     setEntity(entity);
