@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import './App.css';
 import sampleData from './sampleData.js';
 import Button from './components/button';
+import SearchInput from './components/search-input';
 import CardSection from './components/card-section';
 
 function App() {
@@ -94,27 +95,27 @@ function App() {
         />
       </section>
 
-      <label htmlFor="searchCharacter">Search by character name</label>
-      <input 
-        type="text" 
-        id="searchCharacter" 
-        placeholder="Name starts with ..." 
-        onChange={ (currentValue) => {
-          setFilters((currentValue.target.value ? 'nameStartsWith=' + currentValue.target.value : ''));
-          setEntity('characters');
-          } }
-      />
-      <br />
-      <label htmlFor="searchComic">Search by comic title</label>
-      <input 
-        type="text" 
-        id="searchComic" 
-        placeholder="Title starts with ..." 
-        onChange={ (currentValue) => {
-          setFilters((currentValue.target.value ? 'titleStartsWith=' + currentValue.target.value : ''));
-          setEntity('comics');
-          } }
-      />
+      <section className="search-input-container">
+        <SearchInput
+          id="searchCharacter"
+          text="Character name"
+          placeholder="Name starts with ..."
+          handleOnChange={ (currentValue) => {
+            setFilters((currentValue.target.value ? 'nameStartsWith=' + currentValue.target.value : ''));
+            setEntity('characters');
+            } }
+        />
+
+        <SearchInput
+          id="searchComic"
+          text="Comic title"
+          placeholder="Title starts with ..."
+          handleOnChange={ (currentValue) => {
+            setFilters((currentValue.target.value ? 'titleStartsWith=' + currentValue.target.value : ''));
+            setEntity('comics');
+            } }
+        />
+      </section>
 
       { content }
 
