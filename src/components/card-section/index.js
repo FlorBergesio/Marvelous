@@ -16,17 +16,30 @@ const CardSection = (props) => {
                     />
                 );
             });
-            break;
+        break;
+
+        case 'comics':
+            cards = props.data.map( ( element, key ) => {
+                return (
+                    <Card
+                        key={key}
+                        title={ element.title }
+                        thumbnail={ element.thumbnail }
+                    />
+                );
+            });
+        break;
+
         default:
             return (
                 <p>Error</p>
             );
-            break;
+        break;
     }
     
     return (
         <section className="card-section">
-            <h2>{ props.title }</h2>
+            <h2>{ props.type.slice(0,1).toUpperCase() + props.type.slice(1) }</h2>
             <div className="card-container">
                 { cards }
             </div>

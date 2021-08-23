@@ -7,13 +7,20 @@ import CardSection from './components/card-section';
 function App() {
   // withSampleData = true -> use sample data in sampleData.js. 
   // withSampleData = false -> to use API calls
-  const [withSampleData, setwithSampleData] = useState(true);
+  const [withSampleData, setwithSampleData] = useState(false);
 
   const [dataRetrieved, setDataRetrieved] = useState([]);
   const [footerExtraInfo, setfooterExtraInfo] = useState('2021');
 
+  const [entity, setEntity] = useState('characters');
+  const [query, setQuery] = useState('');
+  const [filters, setFilters] = useState('nameStartsWith=White');
+
   const handleClickChangeDataSource = useCallback( () => {
     setwithSampleData( ( currentValue ) => !currentValue );
+    if ( withSampleData ) {
+      setEntity('characters');
+    }
   }, [] );
 
   useEffect( () => {
@@ -25,7 +32,7 @@ function App() {
       // With API calls
       async function fetchMarvelAPI() {
         let response = await fetch(
-          `${process.env.REACT_APP_MARVEL_API_URL}/characters?nameStartsWith=White&ts=${process.env.REACT_APP_MARVEL_API_TS}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_HASH}`
+          `${process.env.REACT_APP_MARVEL_API_URL}/${entity}${query}?${filters}&ts=${process.env.REACT_APP_MARVEL_API_TS}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_HASH}`
         );
         const dataFromAPI = await response.json();
         setDataRetrieved(dataFromAPI.data.results);
@@ -35,15 +42,26 @@ function App() {
       fetchMarvelAPI();
     }
 
-  }, [withSampleData] );
+  }, [withSampleData, entity, query, filters] );
+
+  const handleClickChangeToCharacters = () => {
+    setEntity('characters');
+    setQuery('');
+    setFilters('');
+  };
+
+  const handleClickChangeToComics = () => {
+    setEntity('comics');
+    setQuery('');
+    setFilters('');
+  };
 
   let content;
 
   if ( dataRetrieved.length > 0 ) {
     content = (
       <CardSection
-        title="Characters"
-        type="characters"
+        type={ entity }
         data={ dataRetrieved }
       />
     );
@@ -62,9 +80,41 @@ function App() {
       <section className="button-container">
         <Button
           handleClick={handleClickChangeDataSource}
-          text="Change data source"
+          text={ `Change data source (To ${ ( withSampleData ? 'API' : 'Sample' ) })` }
+        />
+
+        <Button
+          handleClick={handleClickChangeToCharacters}
+          text="Characters"
+        />
+
+        <Button
+          handleClick={handleClickChangeToComics}
+          text="Comics"
         />
       </section>
+
+      <label htmlFor="searchCharacter">Search by character name</label>
+      <input 
+        type="text" 
+        id="searchCharacter" 
+        placeholder="Name starts with ..." 
+        onChange={ (currentValue) => {
+          setFilters((currentValue.target.value ? 'nameStartsWith=' + currentValue.target.value : ''));
+          setEntity('characters');
+          } }
+      />
+      <br />
+      <label htmlFor="searchComic">Search by comic title</label>
+      <input 
+        type="text" 
+        id="searchComic" 
+        placeholder="Title starts with ..." 
+        onChange={ (currentValue) => {
+          setFilters((currentValue.target.value ? 'titleStartsWith=' + currentValue.target.value : ''));
+          setEntity('comics');
+          } }
+      />
 
       { content }
 
