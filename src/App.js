@@ -48,6 +48,18 @@ function App() {
     setFilters('');
   }, [] );
 
+  const handleChangeSearchInput = useCallback( (entity, value) => {
+    switch (entity) {
+      case 'characters':
+        setFilters((value ? 'nameStartsWith=' + value : ''));
+      break;
+      case 'comics':
+        setFilters((value ? 'titleStartsWith=' + value : ''));
+      break;
+    }
+    setEntity(entity);
+  }, [] );
+
   let content;
 
   if ( dataRetrieved.length > 0 ) {
@@ -96,20 +108,14 @@ function App() {
             id="searchCharacter"
             text="Character name"
             placeholder="Name starts with ..."
-            handleOnChange={ (currentValue) => {
-              setFilters((currentValue.target.value ? 'nameStartsWith=' + currentValue.target.value : ''));
-              setEntity('characters');
-              } }
+            handleOnChange={ (currentValue) => handleChangeSearchInput( 'characters', currentValue.target.value ) }
           />
 
           <SearchInput
             id="searchComic"
             text="Comic title"
             placeholder="Title starts with ..."
-            handleOnChange={ (currentValue) => {
-              setFilters((currentValue.target.value ? 'titleStartsWith=' + currentValue.target.value : ''));
-              setEntity('comics');
-              } }
+            handleOnChange={ (currentValue) => handleChangeSearchInput( 'comics', currentValue.target.value ) }
           />
         </section>
       }
