@@ -1,9 +1,11 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useState, createContext } from "react";
 import './App.css';
 import sampleData from './sampleData.js';
 import Button from './components/button';
 import SearchInput from './components/search-input';
 import CardSection from './components/card-section';
+
+export const EntityContext = createContext('characters');
 
 function App() {
   // withSampleData = true -> use sample data in sampleData.js. 
@@ -65,7 +67,6 @@ function App() {
   if ( dataRetrieved.length > 0 ) {
     content = (
       <CardSection
-        type={ entity }
         data={ dataRetrieved }
       />
     );
@@ -120,7 +121,9 @@ function App() {
         </section>
       }
 
-      { content }
+      <EntityContext.Provider value={entity}>
+        { content }
+      </EntityContext.Provider>
 
       <footer>
         <p>{`Marvelous - ${footerExtraInfo}`}</p>

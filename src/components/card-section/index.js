@@ -1,11 +1,15 @@
-import React from "react";
+import React, {useContext} from "react";
 import './index.css';
 import Card from './../card';
+import { EntityContext } from './../../App';
 
 const CardSection = (props) => {
+
+    const entity = useContext(EntityContext);
+
     let cards;
 
-    switch ( props.type ) {
+    switch ( entity ) {
         case 'characters':
             cards = props.data.map( ( element ) => {
                 return (
@@ -39,7 +43,7 @@ const CardSection = (props) => {
     
     return (
         <section className="card-section">
-            <h2>{ props.type.slice(0,1).toUpperCase() + props.type.slice(1) }</h2>
+            <h2>{ entity.slice(0,1).toUpperCase() + entity.slice(1) }</h2>
             <div className="card-container">
                 { cards }
             </div>
