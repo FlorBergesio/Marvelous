@@ -7,10 +7,10 @@ const CardSection = (props) => {
 
     switch ( props.type ) {
         case 'characters':
-            cards = props.data.map( ( element, key ) => {
+            cards = props.data.map( ( element ) => {
                 return (
                     <Card
-                        key={key}
+                        key={ element.id }
                         title={ element.name }
                         thumbnail={ element.thumbnail }
                     />
@@ -19,10 +19,10 @@ const CardSection = (props) => {
         break;
 
         case 'comics':
-            cards = props.data.map( ( element, key ) => {
+            cards = props.data.map( ( element ) => {
                 return (
                     <Card
-                        key={key}
+                        key={ element.id }
                         title={ element.title }
                         thumbnail={ element.thumbnail }
                     />
