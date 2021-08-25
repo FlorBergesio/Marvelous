@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect, useState, createContext, useRef } from "react";
+import React, { useCallback, useEffect, useState, createContext } from "react";
 import './App.css';
 import sampleData from './sampleData.js';
 import Button from './components/button';
 import SearchInput from './components/search-input';
 import CardSection from './components/card-section';
-import Modal from './components/modal';
+import SubmitHeroModal from './components/submit-hero-modal';
 
 export const EntityContext = createContext('characters');
 
-function App() {
+const App = () => {
   // withSampleData = true -> use sample data in sampleData.js. 
   // withSampleData = false -> to use API calls
   const [withSampleData, setwithSampleData] = useState(false);
@@ -19,10 +19,7 @@ function App() {
     query: '',
     filters: ''
   });
-
-  const refInputName = useRef(null);
-  const refInputURL = useRef(null);
-
+  
   const handleClickChangeDataSource = useCallback( () => {
     setwithSampleData( ( currentValue ) => !currentValue );
   }, [] );
@@ -82,36 +79,7 @@ function App() {
     }
     
     setEntity(entity);
-  }, [withSampleData, dataRetrieved, customCharacters] );
-
-  const [modal, setModal] = useState({
-    showModal: false,
-    url: ''
-  });
-
-  const handleModal = useCallback( (url) => {
-      setModal( () => { return {showModal: true, url } } );
-  }, [] );
-
-  const closeModal = () => setModal({showModal: false, url: ''});
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    const heroName = refInputName.current.value;
-    const heroURL = refInputURL.current.value;
-
-    const heroImg = {
-      path: heroURL.slice(0, heroURL.lastIndexOf(".")),
-      extension: heroURL.slice(heroURL.lastIndexOf(".") + 1)
-    };
-
-    const newEntryArray = [{
-      id: (customCharacters.all.length + 1),
-      name: heroName,
-      thumbnail: heroImg
-    }];
-    setCustomCharacters({...customCharacters, all: [...newEntryArray, ...customCharacters.all]});
-  };
+  }, [withSampleData, dataRetrieved, customCharacters, query] );
 
   let content;
 
@@ -133,41 +101,15 @@ function App() {
         <h1>Marvelous</h1>
       </header>
 
-      {modal.showModal &&
-        <Modal closeModal = {closeModal}>
-          <form onSubmit={handleFormSubmit}>
-            <label htmlFor="inputName">Name:</label>
-            <input 
-              type="text" 
-              id="inputName" 
-              placeholder="Character's name"
-              ref={refInputName}
-            />
-
-            <label htmlFor="inputImg">Image URL:</label>
-            <input 
-              type="text" 
-              id="inputImg"
-              ref={refInputURL} 
-            />
-
-            <Button
-              type="Submit"
-              text="Add character"
-            />
-          </form>
-        </Modal>
-      }
-
       <section className="button-container">
         <Button
           handleClick={handleClickChangeDataSource}
           text={ `Change data source (To ${ ( withSampleData ? 'API' : 'Sample' ) })` }
         />
 
-        <Button
-          handleClick={handleModal}
-          text="Add your own hero"
+        <SubmitHeroModal
+          customCharacters={customCharacters}
+          setCustomCharacters={setCustomCharacters}
         />
 
         { (!withSampleData) && 
@@ -229,6 +171,6 @@ function App() {
       </footer>
     </div>
   );
-}
+};
 
 export default App;
