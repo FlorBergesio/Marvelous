@@ -21,6 +21,7 @@ function App() {
   const [filters, setFilters] = useState('');
 
   const [customCharacters, setCustomCharacters] = useState([]);
+  const [customCharactersFiltered, setCustomCharactersFiltered] = useState([]);
 
   const refInputName = useRef(null);
   const refInputURL = useRef(null);
@@ -74,9 +75,14 @@ function App() {
         break;
       }
     }
+
+    if (customCharacters.length > 0) {
+      const customFiltro = await customCharacters.filter( (element) => element.name.toLowerCase().slice(0, value.length) === value.toLowerCase() );
+      setCustomCharactersFiltered(customFiltro);
+    }
     
     setEntity(entity);
-  }, [withSampleData, dataRetrieved] );
+  }, [withSampleData, dataRetrieved, customCharacters] );
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -201,7 +207,7 @@ function App() {
       { (customCharacters.length > 0) &&
         <EntityContext.Provider value="characters">
           <CardSection
-            data={ customCharacters }
+            data={ customCharactersFiltered.length > 0 ? customCharactersFiltered : customCharacters }
             customTitle="Your heroes"
           />
         </EntityContext.Provider>
