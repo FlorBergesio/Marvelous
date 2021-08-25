@@ -43,7 +43,7 @@ const CardSection = (props) => {
     
     return (
         <section className="card-section">
-            <h2>{ entity.slice(0,1).toUpperCase() + entity.slice(1) }</h2>
+            <h2>{ props.customTitle ? props.customTitle : (entity.slice(0,1).toUpperCase() + entity.slice(1)) }</h2>
             <div className="card-container">
                 { cards }
             </div>
