@@ -12,16 +12,13 @@ function App() {
   // withSampleData = true -> use sample data in sampleData.js. 
   // withSampleData = false -> to use API calls
   const [withSampleData, setwithSampleData] = useState(false);
-
   const [dataRetrieved, setDataRetrieved] = useState([]);
-  const [footerExtraInfo, setfooterExtraInfo] = useState('2021');
-
+  const [customCharacters, setCustomCharacters] = useState({all: [], filtered: []});
   const [entity, setEntity] = useState('characters');
-  const [query, setQuery] = useState('');
-  const [filters, setFilters] = useState('');
-
-  const [customCharacters, setCustomCharacters] = useState([]);
-  const [customCharactersFiltered, setCustomCharactersFiltered] = useState([]);
+  const [query, setQuery] = useState({
+    query: '',
+    filters: ''
+  });
 
   const refInputName = useRef(null);
   const refInputURL = useRef(null);
@@ -32,53 +29,56 @@ function App() {
 
   const fetchApi = useCallback( async () => {
     let response = await fetch(
-      `${process.env.REACT_APP_MARVEL_API_URL}/${entity}${query}?${filters}&ts=${process.env.REACT_APP_MARVEL_API_TS}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_HASH}`
+      `${process.env.REACT_APP_MARVEL_API_URL}/${entity}${query.query}?${query.filters}&ts=${process.env.REACT_APP_MARVEL_API_TS}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_HASH}`
     );
     const dataFromAPI = await response.json();
     setDataRetrieved(dataFromAPI.data.results);
-    setfooterExtraInfo(dataFromAPI.attributionText);
-  }, [entity, query, filters] );
+  }, [entity, query] );
 
   useEffect( () => {
     if ( withSampleData ) {
       // With sample data
       setEntity('characters');
-      setfooterExtraInfo(sampleData.attributionText);
       setDataRetrieved(sampleData.data.results);
     } else {
       // With API calls
       fetchApi();
     }
-  }, [withSampleData, entity, query, filters, customCharacters, fetchApi] );
+  }, [withSampleData, entity, query, customCharacters, fetchApi] );
 
   const handleClickChangeEntity = useCallback( (entity) => {
     setEntity(entity);
-    setQuery('');
-    setFilters('');
+    setQuery({
+      query: '',
+      filters: ''
+    });
   }, [] );
 
   const handleChangeSearchInput = useCallback( async (entity, value) => {
+    let filtro;
     if ( withSampleData ) {
-      const filtro = await dataRetrieved.filter( (element) => element.name.toLowerCase().slice(0, value.length) === value.toLowerCase() );
+      filtro = await dataRetrieved.filter( (element) => element.name.toLowerCase().slice(0, value.length) === value.toLowerCase() );
       setDataRetrieved(filtro);
       return;
     } else {
       switch (entity) {
         case 'characters':
-          setFilters((value ? 'nameStartsWith=' + value : ''));
+          filtro = value ? 'nameStartsWith=' + value : '';
+          setQuery({...query, filters: filtro});
         break;
         case 'comics':
-          setFilters((value ? 'titleStartsWith=' + value : ''));
+          filtro = value ? 'titleStartsWith=' + value : '';
+          setQuery({...query, filters: filtro});
         break;
         default:
-          setFilters('');
+          setQuery({...query, filters: ''});
         break;
       }
     }
 
-    if (customCharacters.length > 0) {
-      const customFiltro = await customCharacters.filter( (element) => element.name.toLowerCase().slice(0, value.length) === value.toLowerCase() );
-      setCustomCharactersFiltered(customFiltro);
+    if (customCharacters.all.length > 0) {
+      const customFiltro = await customCharacters.all.filter( (element) => element.name.toLowerCase().slice(0, value.length) === value.toLowerCase() );
+      setCustomCharacters({...customCharacters, filtered: customFiltro});
     }
     
     setEntity(entity);
@@ -106,11 +106,11 @@ function App() {
     };
 
     const newEntryArray = [{
-      id: (customCharacters.length + 1),
+      id: (customCharacters.all.length + 1),
       name: heroName,
       thumbnail: heroImg
     }];
-    setCustomCharacters([...newEntryArray, ...customCharacters]);
+    setCustomCharacters({...customCharacters, all: [...newEntryArray, ...customCharacters.all]});
   };
 
   let content;
@@ -204,10 +204,10 @@ function App() {
         }
       </section>
       
-      { (customCharacters.length > 0) &&
+      { (customCharacters.all.length > 0) &&
         <EntityContext.Provider value="characters">
           <CardSection
-            data={ customCharactersFiltered.length > 0 ? customCharactersFiltered : customCharacters }
+            data={ customCharacters.filtered.length > 0 ? customCharacters.filtered : customCharacters.all }
             customTitle="Your heroes"
           />
         </EntityContext.Provider>
@@ -218,7 +218,7 @@ function App() {
       </EntityContext.Provider>
 
       <footer>
-        <p>{`Marvelous - ${footerExtraInfo}`}</p>
+        <p>{"Marvelous - Data provided by Marvel. © 2021 MARVEL"}</p>
         <a
           href="https://github.com/FlorBergesio"
           target="_blank"
