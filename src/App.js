@@ -4,6 +4,7 @@ import sampleData from './sampleData.js';
 import Button from './components/button';
 import SearchInput from './components/search-input';
 import CardSection from './components/card-section';
+import Modal from './components/modal';
 
 export const EntityContext = createContext('characters');
 
@@ -50,17 +51,35 @@ function App() {
     setFilters('');
   }, [] );
 
-  const handleChangeSearchInput = useCallback( (entity, value) => {
-    switch (entity) {
-      case 'characters':
-        setFilters((value ? 'nameStartsWith=' + value : ''));
-      break;
-      case 'comics':
-        setFilters((value ? 'titleStartsWith=' + value : ''));
-      break;
+  const handleChangeSearchInput = useCallback( async (entity, value) => {
+    if ( withSampleData ) {
+      const filtro = await dataRetrieved.filter( (element) => element.name.toLowerCase().slice(0, value.length) === value.toLowerCase() );
+      setDataRetrieved(filtro);
+      return;
+    } else {
+      switch (entity) {
+        case 'characters':
+          setFilters((value ? 'nameStartsWith=' + value : ''));
+        break;
+        case 'comics':
+          setFilters((value ? 'titleStartsWith=' + value : ''));
+        break;
+      }
     }
+    
     setEntity(entity);
+  }, [withSampleData, dataRetrieved] );
+
+  const [modal, setModal] = useState({
+    showModal: false,
+    url: ''
+  });
+
+  const handleModal = useCallback( (url) => {
+      setModal( () => { return {showModal: true, url } } );
   }, [] );
+
+  const closeModal = () => setModal({showModal: false, url: ''});
 
   let content;
 
@@ -82,10 +101,32 @@ function App() {
         <h1>Marvelous</h1>
       </header>
 
+      {modal.showModal &&
+        <Modal closeModal = {closeModal}>
+          <label htmlFor="inputName">Name:</label>
+          <input 
+            type="text" 
+            id="inputName" 
+            placeholder="Character's name"
+          />
+
+          <label htmlFor="inputImg">Image URL:</label>
+          <input 
+            type="text" 
+            id="inputImg" 
+          />
+        </Modal>
+      }
+
       <section className="button-container">
         <Button
           handleClick={handleClickChangeDataSource}
           text={ `Change data source (To ${ ( withSampleData ? 'API' : 'Sample' ) })` }
+        />
+
+        <Button
+          handleClick={handleModal}
+          text="Add your own"
         />
 
         { (!withSampleData) && 
@@ -103,23 +144,25 @@ function App() {
         }
       </section>
 
-      { (!withSampleData) && 
-        <section className="search-input-container">
-          <SearchInput
-            id="searchCharacter"
-            text="Character name"
-            placeholder="Name starts with ..."
-            handleOnChange={ (currentValue) => handleChangeSearchInput( 'characters', currentValue.target.value ) }
-          />
+       
+      <section className="search-input-container">
+        <SearchInput
+          id="searchCharacter"
+          text="Character name"
+          placeholder="Name starts with ..."
+          handleOnChange={ (currentValue) => handleChangeSearchInput( 'characters', currentValue.target.value ) }
+        />
 
+        { (!withSampleData) &&
           <SearchInput
             id="searchComic"
             text="Comic title"
             placeholder="Title starts with ..."
             handleOnChange={ (currentValue) => handleChangeSearchInput( 'comics', currentValue.target.value ) }
           />
-        </section>
-      }
+        }
+      </section>
+      
 
       <EntityContext.Provider value={entity}>
         { content }
