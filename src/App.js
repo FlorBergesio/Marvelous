@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, createContext } from "react";
+import React, { useCallback, useEffect, useState, createContext, useRef } from "react";
 import './App.css';
 import sampleData from './sampleData.js';
 import Button from './components/button';
@@ -20,6 +20,11 @@ function App() {
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState('');
 
+  const [customCharacters, setCustomCharacters] = useState([]);
+
+  const refInputName = useRef(null);
+  const refInputURL = useRef(null);
+
   const handleClickChangeDataSource = useCallback( () => {
     setwithSampleData( ( currentValue ) => !currentValue );
   }, [] );
@@ -34,7 +39,7 @@ function App() {
       // With API calls
       fetchApi();
     }
-  }, [withSampleData, entity, query, filters] );
+  }, [withSampleData, entity, query, filters, customCharacters] );
 
   const fetchApi = useCallback( async () => {
     let response = await fetch(
@@ -81,6 +86,24 @@ function App() {
 
   const closeModal = () => setModal({showModal: false, url: ''});
 
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    const heroName = refInputName.current.value;
+    const heroURL = refInputURL.current.value;
+
+    const heroImg = {
+      path: heroURL.slice(0, heroURL.lastIndexOf(".")),
+      extension: heroURL.slice(heroURL.lastIndexOf(".") + 1)
+    };
+
+    const newEntryArray = [{
+      id: (customCharacters.length + 1),
+      name: heroName,
+      thumbnail: heroImg
+    }];
+    setCustomCharacters([...newEntryArray, ...customCharacters]);
+  };
+
   let content;
 
   if ( dataRetrieved.length > 0 ) {
@@ -103,18 +126,27 @@ function App() {
 
       {modal.showModal &&
         <Modal closeModal = {closeModal}>
-          <label htmlFor="inputName">Name:</label>
-          <input 
-            type="text" 
-            id="inputName" 
-            placeholder="Character's name"
-          />
+          <form onSubmit={handleFormSubmit}>
+            <label htmlFor="inputName">Name:</label>
+            <input 
+              type="text" 
+              id="inputName" 
+              placeholder="Character's name"
+              ref={refInputName}
+            />
 
-          <label htmlFor="inputImg">Image URL:</label>
-          <input 
-            type="text" 
-            id="inputImg" 
-          />
+            <label htmlFor="inputImg">Image URL:</label>
+            <input 
+              type="text" 
+              id="inputImg"
+              ref={refInputURL} 
+            />
+
+            <Button
+              type="Submit"
+              text="Add character"
+            />
+          </form>
         </Modal>
       }
 
@@ -126,7 +158,7 @@ function App() {
 
         <Button
           handleClick={handleModal}
-          text="Add your own"
+          text="Add your own hero"
         />
 
         { (!withSampleData) && 
@@ -163,6 +195,14 @@ function App() {
         }
       </section>
       
+      { (customCharacters.length > 0) &&
+        <EntityContext.Provider value="characters">
+          <CardSection
+            data={ customCharacters }
+            customTitle="Your heroes"
+          />
+        </EntityContext.Provider>
+      }
 
       <EntityContext.Provider value={entity}>
         { content }
